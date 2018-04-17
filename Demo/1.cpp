@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <graphics.h>
 #include <conio.h>
@@ -9,6 +10,10 @@
 #include <map>
 #include <Windows.h>
 #include <mmsystem.h>
+#include <easyx.h>
+#include <string>
+#include <numeric>
+#include <fstream>
 using namespace std;
 
 #pragma comment(lib,"Winmm.lib")
@@ -21,7 +26,7 @@ using namespace std;
 #define  DOWN  80
 #define  LEFT  75
 #define  RIGHT 77
-#define  SPACE 20
+#define  SPACE 32
 
 #define GAME_WIDTH (WIDTH*85/100)
 
@@ -97,9 +102,9 @@ void init(User &user, Dog dog)
 
 	displayButton();
 	InputBox(user.name, 20, "请输入用户名：");
-	outtextxy(GAME_WIDTH + 10, HEIGHT * 1 / 2 + 20, "Name: ");
-	outtextxy(GAME_WIDTH + 60, HEIGHT * 1 / 2 + 20, user.name);
-
+	outtextxy(GAME_WIDTH + 10, HEIGHT * 0.5 + 20, "Name: ");
+	outtextxy(GAME_WIDTH + 60, HEIGHT * 0.5 + 20, user.name);
+	outtextxy(GAME_WIDTH + 10, HEIGHT * 0.55 + 20, "Score: ");
 }
 
 int checkButton(int mouseX, int mouseY)
@@ -132,8 +137,51 @@ void displayDog(Dog dog, IMAGE back, IMAGE p1, IMAGE p2)
 {
 	BeginBatchDraw();//开始批量绘图
 	putimage(0, 0, &back);
-	putimage(dog.x, dog.y, &p1, SRCAND);
-	putimage(dog.x, dog.y, &p2, SRCINVERT);
+
+	TCHAR xLocation[20];
+	TCHAR yLocation[20];
+
+	_itoa(dog.x, xLocation, 10);
+	_itoa(dog.y, yLocation, 10);
+
+	setbkmode(TRANSPARENT);
+
+	/*cout << xLocation << endl;
+	cout << yLocation << endl;
+	system("cls");
+	cout << xLocation << endl;
+	cout << yLocation << endl;*/
+
+	if (dog.x>=90 && dog.x<=130 && dog.y>=200 && dog.y<=250)
+	{
+		putimage(dog.x, dog.y, &p1, SRCAND);
+	}
+	else if (dog.x >= 340 && dog.x <= 380 && dog.y >= 200 && dog.y <= 250)
+	{
+		putimage(dog.x, dog.y, &p1, SRCAND);
+	}
+	else if (dog.x >= 580 && dog.x <= 620 && dog.y >= 200 && dog.y <= 250)
+	{
+		putimage(dog.x, dog.y, &p1, SRCAND);
+	}
+	else if (dog.x>=90 && dog.x<=130 && dog.y>=330 && dog.y<=380)
+	{
+		putimage(dog.x, dog.y, &p1, SRCAND);
+	}
+	else if (dog.x >= 340 && dog.x <= 380 && dog.y >= 330 && dog.y <= 380)
+	{
+		putimage(dog.x, dog.y, &p1, SRCAND);
+	}
+	else if (dog.x >= 580 && dog.x <= 620 && dog.y >= 330 && dog.y <= 380)
+	{
+		putimage(dog.x, dog.y, &p1, SRCAND);
+	}
+	else
+	{
+		putimage(dog.x, dog.y, &p1, SRCAND);
+		putimage(dog.x, dog.y, &p2, SRCINVERT);
+	}
+
 	EndBatchDraw();//结束批量绘图，将绘制好的图片统一贴到屏幕上。	
 }
 
@@ -228,13 +276,13 @@ void free_Bone(Bone *head)
 	}
 }
 
-void displayBone(Bone *head, IMAGE b1, IMAGE b2, IMAGE b3, int k) {
+void displayAllBones(Bone *head, IMAGE b1, IMAGE b2, IMAGE b3)
+{
 	Bone *p;
 	p = head;
 	BeginBatchDraw();//开始批量绘图
 	while (p != nullptr)
 	{
-
 		if (p->x == 110 || p->x == 360)
 		{
 
@@ -249,9 +297,60 @@ void displayBone(Bone *head, IMAGE b1, IMAGE b2, IMAGE b3, int k) {
 
 			putimage(p->x, p->y, &b2, SRCINVERT);
 		}
-
-
 		p = p->next;
+	}
+	FlushBatchDraw();
+	EndBatchDraw();
+}
+
+void displayBone(IMAGE b1, IMAGE b2, IMAGE b3,int count) 
+{
+	BeginBatchDraw();//开始批量绘图
+	switch (count)
+	{
+	case 1:
+	{
+		putimage(110, 230, &b1, SRCAND);
+
+		putimage(110, 230, &b2, SRCINVERT);
+	}break;
+
+	case 2:
+	{
+		putimage(360, 230, &b1, SRCAND);
+
+		putimage(360, 230, &b2, SRCINVERT);
+	}break;
+
+	case 3:
+	{
+		putimage(600, 230, &b1, SRCAND);
+
+		putimage(600, 230, &b2, SRCINVERT);
+	}break;
+
+	case 4:
+	{
+		putimage(110, 360, &b1, SRCAND);
+
+		putimage(110, 360, &b2, SRCINVERT);
+	}break;
+
+	case 5:
+	{
+		putimage(360, 360, &b1, SRCAND);
+
+		putimage(360, 360, &b2, SRCINVERT);
+	}break;
+
+	case 6:
+	{
+		putimage(600, 360, &b1, SRCAND);
+
+		putimage(600, 360, &b2, SRCINVERT);
+	}break;
+
+	default:break;
 	}
 	FlushBatchDraw();
 	EndBatchDraw();//结束批量绘图，将绘制好的图片统一贴到屏幕上。
@@ -342,8 +441,26 @@ void deleteBone(Bone *head, int &count, map<int, boolean> &statusMap)
 	}
 }
 
-void gameOver()
+void saveToFile(TCHAR *name,TCHAR *totalScore)
 {
+	ofstream outFile("info.ini", ios::out);
+
+	//如果打开失败,outfile返回值
+	if (!outFile)                        
+	{
+		cout << "open error!" << endl;
+		exit(1);
+	}
+
+	//向磁盘文件"info.ini"输出数据
+	outFile << "Name: "<<name<<endl<<"Total score: "<<totalScore<<endl;
+	        
+	outFile.close();
+}
+
+void gameOver(User user,TCHAR *totalScore)
+{
+	saveToFile(user.name, totalScore);
 	exit(0);
 }
 
@@ -352,16 +469,18 @@ int main()
 	int mouseX;	        //鼠标位置坐标X
 	int mouseY;
 	MOUSEMSG mmsg;	    //鼠标消息变量
-	int flag = -1, step = 1, count = 1;
+	int flag = -1, step = 1, count = 0;
 	char c = 0, d = 0;
 	int tag=1;
 	User user;
+	user.score = 0;
 	Bone *head;
 	Bone *head2;
 	Dog dog = {10,400};
 	init(user, dog);
 	IMAGE back, p1, p2, b1, b2, b3;
 	map<int, boolean> statusMap;
+	TCHAR scoreNum[10];
 	head = create_head(110, 230);
 
 	loadimage(&back,"image\\background.jpg");
@@ -375,9 +494,9 @@ int main()
 	Util util;
 
 	// 打开音乐
-	mciSendString("open Innocence.mp3 play Innocence.mp3 repeat", NULL, 0, NULL);
+	mciSendString(TEXT("open Innocence.mp3 alias music"), nullptr, 0, nullptr);
 
-	mciSendString("play mymusic", NULL, 0, NULL);
+	mciSendString(TEXT("play music"), nullptr, 0, nullptr);
 
 	while(1)
 	{
@@ -430,6 +549,22 @@ int main()
 			}
 			if(c==SPACE)
 			{
+				if (count != 0)
+				{
+					displayBone(b1, b2, b3, count);
+					deleteBone(head, count, statusMap);
+
+					_itoa(++user.score, scoreNum, 10);
+					
+					if (user.score == 1)
+					{
+						outtextxy(GAME_WIDTH + 60, HEIGHT * 0.55 + 20, scoreNum);
+					}
+					else
+					{
+						outtextxy(GAME_WIDTH + 60, HEIGHT * (0.55+0.05) + 20, scoreNum);
+					}
+				}	
 			}
 			c = 0;
 		}
@@ -439,13 +574,13 @@ int main()
 			step++;
 			if(step % 2 == 0)
 			{
-			displayBone(head, b1, b2, b3, count);
-			flag = -1;
+				displayAllBones(head, b1, b2, b3);
+				flag = -1;
 			}
 			else
 			{
-			displayDog(dog, back, p1, p2);
-			flag = -1;
+				displayDog(dog, back, p1, p2);
+				flag = -1;
 			}
 		}
 		else if(flag==2)
@@ -471,7 +606,7 @@ int main()
 		}
 		else if(flag==4)
 		{
-			gameOver();
+			gameOver(user,scoreNum);
 		}
 	}
 	_getch();
