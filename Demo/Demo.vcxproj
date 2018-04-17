@@ -115,7 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\WeChat file\WeChat Files\need_you_now00\Files\1.cpp" />
+    <ClCompile Include="1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="image\background.jpg" />
