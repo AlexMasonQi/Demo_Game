@@ -68,6 +68,7 @@ public:
 	}
 };
 
+//显示功能区按钮
 void displayButton()
 {
 	setfillcolor(RGB(255, 255, 100));
@@ -88,6 +89,7 @@ void displayButton()
 
 }
 
+//系统初始化
 void init(User &user, Dog dog)
 {
 	initgraph(WIDTH, HEIGHT);  //界面大小
@@ -107,6 +109,7 @@ void init(User &user, Dog dog)
 	outtextxy(GAME_WIDTH + 10, HEIGHT * 0.55 + 20, "Score: ");
 }
 
+//检测按键
 int checkButton(int mouseX, int mouseY)
 {
 	if (mouseX >= GAME_WIDTH + 40 && mouseX <= GAME_WIDTH + 100 && mouseY >= 20 && mouseY <= 50)
@@ -133,7 +136,32 @@ int checkButton(int mouseX, int mouseY)
 	}
 }
 
-void displayDog(Dog dog, IMAGE back, IMAGE p1, IMAGE p2)
+boolean isBoneExists(int zone, map<int, boolean> statusMap)
+{
+	map<int, boolean>::iterator iter;
+	boolean result = false;
+	for (iter = statusMap.begin(); iter != statusMap.end(); iter++)
+	{
+		if (zone == iter->first)
+		{
+			if (iter->second)
+			{
+				result = true;
+				break;
+			}
+			else
+			{
+				result = false;
+				break;
+			}
+		}
+	}
+
+	return result;
+}
+
+//显示小狗狗
+void displayDog(Dog dog, IMAGE back,map<int,boolean> statusMap, int &delTag, IMAGE p1, IMAGE p2)
 {
 	BeginBatchDraw();//开始批量绘图
 	putimage(0, 0, &back);
@@ -146,45 +174,103 @@ void displayDog(Dog dog, IMAGE back, IMAGE p1, IMAGE p2)
 
 	setbkmode(TRANSPARENT);
 
-	/*cout << xLocation << endl;
-	cout << yLocation << endl;
-	system("cls");
-	cout << xLocation << endl;
-	cout << yLocation << endl;*/
-
+	//洞口1
 	if (dog.x>=90 && dog.x<=130 && dog.y>=200 && dog.y<=250)
 	{
-		putimage(dog.x, dog.y, &p1, SRCAND);
+		if (isBoneExists(1, statusMap))
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			delTag = 1;
+		}
+		else
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			putimage(dog.x, dog.y, &p2, SRCINVERT);
+		}
 	}
+	//洞口2
 	else if (dog.x >= 340 && dog.x <= 380 && dog.y >= 200 && dog.y <= 250)
 	{
-		putimage(dog.x, dog.y, &p1, SRCAND);
+		if (isBoneExists(2, statusMap))
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			delTag = 2;
+		}
+		else
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			putimage(dog.x, dog.y, &p2, SRCINVERT);
+		}
 	}
+	//洞口3
 	else if (dog.x >= 580 && dog.x <= 620 && dog.y >= 200 && dog.y <= 250)
 	{
-		putimage(dog.x, dog.y, &p1, SRCAND);
+		if (isBoneExists(3, statusMap))
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			delTag = 3;
+		}
+		else
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			putimage(dog.x, dog.y, &p2, SRCINVERT);
+		}
 	}
+	//洞口4
 	else if (dog.x>=90 && dog.x<=130 && dog.y>=330 && dog.y<=380)
 	{
-		putimage(dog.x, dog.y, &p1, SRCAND);
+		if (isBoneExists(4, statusMap))
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			delTag = 4;
+		}
+		else
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			putimage(dog.x, dog.y, &p2, SRCINVERT);
+		}
 	}
+	//洞口5
 	else if (dog.x >= 340 && dog.x <= 380 && dog.y >= 330 && dog.y <= 380)
 	{
-		putimage(dog.x, dog.y, &p1, SRCAND);
+		if (isBoneExists(5, statusMap))
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			delTag = 5;
+		}
+		else
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			putimage(dog.x, dog.y, &p2, SRCINVERT);
+		}
 	}
+	//洞口6
 	else if (dog.x >= 580 && dog.x <= 620 && dog.y >= 330 && dog.y <= 380)
 	{
-		putimage(dog.x, dog.y, &p1, SRCAND);
+		if (isBoneExists(6, statusMap))
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			delTag = 6;
+		}
+		else
+		{
+			putimage(dog.x, dog.y, &p1, SRCAND);
+			putimage(dog.x, dog.y, &p2, SRCINVERT);
+		}
 	}
+
+	//非洞口区域
 	else
 	{
 		putimage(dog.x, dog.y, &p1, SRCAND);
 		putimage(dog.x, dog.y, &p2, SRCINVERT);
+		delTag = 0;
 	}
 
 	EndBatchDraw();//结束批量绘图，将绘制好的图片统一贴到屏幕上。	
 }
 
+//水平方向移动小狗
 void moveDogx(Dog &dog, int k)
 {
 	if (dog.x >= 10 && dog.x <= 650)
@@ -201,6 +287,7 @@ void moveDogx(Dog &dog, int k)
 	}
 }
 
+//垂直方向移动小狗
 void moveDogy(Dog &dog, int k)
 {
 	if (dog.y >= 0 && dog.y <= 400)
@@ -217,6 +304,7 @@ void moveDogy(Dog &dog, int k)
 	}
 }
 
+//创建头节点
 Bone* create_head(int n1, int n2)
 {
 	Bone *head = (Bone *)malloc(sizeof(Bone));
@@ -226,6 +314,7 @@ Bone* create_head(int n1, int n2)
 	return head;
 }
 
+//创建节点
 void create_node(Bone *head, int n1, int n2)
 {
 	Bone *p, *t;
@@ -241,6 +330,7 @@ void create_node(Bone *head, int n1, int n2)
 	t->next = p;
 }
 
+//删除节点
 void del_node(Bone *head, int n1, int n2)
 {
 	Bone *p, *t;
@@ -265,6 +355,7 @@ void del_node(Bone *head, int n1, int n2)
 	}
 }
 
+//释放内存,防止内存泄露
 void free_Bone(Bone *head)
 {
 	Bone *p;
@@ -276,33 +367,97 @@ void free_Bone(Bone *head)
 	}
 }
 
-void displayAllBones(Bone *head, IMAGE b1, IMAGE b2, IMAGE b3)
+//显示所有骨头
+void displayAllBones(Bone *head, map<int,boolean> statusMap, IMAGE b1, IMAGE b2, IMAGE b3)
 {
 	Bone *p;
 	p = head;
 	BeginBatchDraw();//开始批量绘图
-	while (p != nullptr)
+	//while (p != nullptr)
+	//{
+	//	//如果第一个洞口还存在骨头
+	//	if (statusMap[1])
+	//	{
+	//		if (p->x == 110 || p->x == 360)
+	//		{
+
+	//			putimage(p->x, p->y, &b1, SRCAND);
+
+	//			putimage(p->x, p->y, &b2, SRCINVERT);
+	//		}
+	//		else
+	//		{
+
+	//			putimage(p->x, p->y, &b1, SRCAND);
+
+	//			putimage(p->x, p->y, &b2, SRCINVERT);
+	//		}
+	//	}
+	//	else
+	//	{
+
+	//	}
+	//	p = p->next;
+	//}
+
+	for (int i = 0; i < statusMap.size(); i++)
 	{
-		if (p->x == 110 || p->x == 360)
+		if (statusMap[i])
 		{
+			switch (i)
+			{
+			case 1:
+			{
+				putimage(110, 230, &b1, SRCAND);
 
-			putimage(p->x, p->y, &b1, SRCAND);
+				putimage(110, 230, &b2, SRCINVERT);
+			}break;
 
-			putimage(p->x, p->y, &b2, SRCINVERT);
+			case 2:
+			{
+				putimage(360, 230, &b1, SRCAND);
+
+				putimage(360, 230, &b2, SRCINVERT);
+			}break;
+
+			case 3:
+			{
+				putimage(600, 230, &b1, SRCAND);
+
+				putimage(600, 230, &b2, SRCINVERT);
+			}break;
+
+			case 4:
+			{
+				putimage(110, 360, &b1, SRCAND);
+
+				putimage(110, 360, &b2, SRCINVERT);
+			}break;
+
+			case 5:
+			{
+				putimage(360, 360, &b1, SRCAND);
+
+				putimage(360, 360, &b2, SRCINVERT);
+			}break;
+
+			case 6:
+			{
+				putimage(600, 360, &b1, SRCAND);
+
+				putimage(600, 360, &b2, SRCINVERT);
+			}break;
+
+			default:break;
+			}
 		}
-		else
-		{
-
-			putimage(p->x, p->y, &b1, SRCAND);
-
-			putimage(p->x, p->y, &b2, SRCINVERT);
-		}
-		p = p->next;
 	}
+
 	FlushBatchDraw();
 	EndBatchDraw();
 }
 
+//显示指定的骨头
 void displayBone(IMAGE b1, IMAGE b2, IMAGE b3,int count) 
 {
 	BeginBatchDraw();//开始批量绘图
@@ -356,13 +511,13 @@ void displayBone(IMAGE b1, IMAGE b2, IMAGE b3,int count)
 	EndBatchDraw();//结束批量绘图，将绘制好的图片统一贴到屏幕上。
 }
 
+//添加骨头
 void add_bone(Bone *head, int tag, int &count, map<int,boolean> &statusMap)
 {
 	switch (tag)
 	{
-		case 2:
+		case 1:
 		{
-			create_node(head, 360, 230);
 			count = tag;
 			statusMap[tag] = true;
 		}break;
@@ -397,42 +552,44 @@ void add_bone(Bone *head, int tag, int &count, map<int,boolean> &statusMap)
 	}
 }
 
-void deleteBone(Bone *head, int &count, map<int, boolean> &statusMap)
+//删除最后添加的骨头
+void deleteBone(Bone *head, int count, map<int, boolean> &statusMap)
 {
 	switch (count)
 	{
 		case 1:
 		{
-			MessageBox(nullptr, "不能删除第一个骨头", "警告", MB_OK + 48);
+			//MessageBox(nullptr, "不能删除第一个骨头", "警告", MB_OK + 48);
+			statusMap[count] = false;
 		}break;
 
 		case 2:
 		{
-			del_node(head, 360, 230); count--;
+			del_node(head, 360, 230);
 			statusMap[count] = false;
 		}break;
 
 		case 3:
 		{
-			del_node(head, 600, 230); count--;
+			del_node(head, 600, 230);
 			statusMap[count] = false;
 		}break;
 
 		case 4:
 		{
-			del_node(head, 110, 360); count--;
+			del_node(head, 110, 360);
 			statusMap[count] = false;
 		}break;
 
 		case 5:
 		{
-			del_node(head, 360, 360); count--;
+			del_node(head, 360, 360);
 			statusMap[count] = false;
 		}break;
 
 		case 6:
 		{
-			del_node(head, 600, 360); count--;
+			del_node(head, 600, 360);
 			statusMap[count] = false;
 		}break;
 
@@ -441,6 +598,53 @@ void deleteBone(Bone *head, int &count, map<int, boolean> &statusMap)
 	}
 }
 
+//当找到骨头后对其进行删除
+void deleteBoneByDog(Bone *head, int delTag, map<int, boolean> &statusMap)
+{
+	switch (delTag)
+	{
+	case 1:
+	{
+		//MessageBox(nullptr, "不能删除第一个骨头", "警告", MB_OK + 48);
+		statusMap[delTag] = false;
+	}break;
+
+	case 2:
+	{
+		del_node(head, 360, 230);
+		statusMap[delTag] = false;
+	}break;
+
+	case 3:
+	{
+		del_node(head, 600, 230);
+		statusMap[delTag] = false;
+	}break;
+
+	case 4:
+	{
+		del_node(head, 110, 360);
+		statusMap[delTag] = false;
+	}break;
+
+	case 5:
+	{
+		del_node(head, 360, 360);
+		statusMap[delTag] = false;
+	}break;
+
+	case 6:
+	{
+		del_node(head, 600, 360);
+		statusMap[delTag] = false;
+	}break;
+
+	default:
+		break;
+	}
+}
+
+//将得分信息和用户名保存在info.ini文件中
 void saveToFile(TCHAR *name,TCHAR *totalScore)
 {
 	ofstream outFile("info.ini", ios::out);
@@ -458,6 +662,7 @@ void saveToFile(TCHAR *name,TCHAR *totalScore)
 	outFile.close();
 }
 
+//结束游戏
 void gameOver(User user,TCHAR *totalScore)
 {
 	saveToFile(user.name, totalScore);
@@ -469,17 +674,18 @@ int main()
 	int mouseX;	        //鼠标位置坐标X
 	int mouseY;
 	MOUSEMSG mmsg;	    //鼠标消息变量
-	int flag = -1, step = 1, count = 0;
+	int flag = -1, step = 1, count = 1;
 	char c = 0, d = 0;
 	int tag=1;
+	int delTag = 0;
 	User user;
 	user.score = 0;
 	Bone *head;
-	Bone *head2;
 	Dog dog = {10,400};
 	init(user, dog);
 	IMAGE back, p1, p2, b1, b2, b3;
 	map<int, boolean> statusMap;
+	statusMap[1] = true;
 	TCHAR scoreNum[10];
 	head = create_head(110, 230);
 
@@ -489,7 +695,7 @@ int main()
 	loadimage(&b1,"image\\bone02.jpg");
 	loadimage(&b2,"image\\bone01.jpg");
 	loadimage(&b3,"image\\bone03.jpg");
-	displayDog(dog, back, p1, p2);
+	displayDog(dog, back, statusMap, delTag, p1, p2);
 
 	Util util;
 
@@ -530,39 +736,46 @@ int main()
 			if(c==RIGHT) 
 			{
 				moveDogx(dog,1);
-				displayDog(dog, back, p1, p2);
+				displayDog(dog, back, statusMap, delTag, p1, p2);
 			}
 			if(c==LEFT) 
 			{
 				moveDogx(dog,-1);
-				displayDog(dog, back, p1, p2);
+				displayDog(dog, back, statusMap, delTag, p1, p2);
 			}
 			if(c==UP)
 			{
 				moveDogy(dog,-1);
-				displayDog(dog, back, p1, p2);
+				displayDog(dog, back, statusMap, delTag, p1, p2);
 			}
 			if(c==DOWN)
 			{
 				moveDogy(dog,1);
-				displayDog(dog, back, p1, p2);
+				displayDog(dog, back, statusMap, delTag, p1, p2);
 			}
 			if(c==SPACE)
 			{
-				if (count != 0)
+				if (delTag != 0)
 				{
-					displayBone(b1, b2, b3, count);
-					deleteBone(head, count, statusMap);
-
-					_itoa(++user.score, scoreNum, 10);
-					
-					if (user.score == 1)
+					if (statusMap[delTag])
 					{
-						outtextxy(GAME_WIDTH + 60, HEIGHT * 0.55 + 20, scoreNum);
+						displayBone(b1, b2, b3, delTag);
+						deleteBoneByDog(head, delTag, statusMap);
+
+						_itoa(++user.score, scoreNum, 10);
+
+						if (user.score == 1)
+						{
+							outtextxy(GAME_WIDTH + 60, HEIGHT * 0.55 + 20, scoreNum);
+						}
+						else
+						{
+							outtextxy(GAME_WIDTH + 60, HEIGHT * (0.55 + 0.05) + 20, scoreNum);
+						}
 					}
 					else
 					{
-						outtextxy(GAME_WIDTH + 60, HEIGHT * (0.55+0.05) + 20, scoreNum);
+						MessageBox(nullptr, "该洞口无骨头，勿重复操作!", "警告", MB_OK + 48);
 					}
 				}	
 			}
@@ -574,18 +787,18 @@ int main()
 			step++;
 			if(step % 2 == 0)
 			{
-				displayAllBones(head, b1, b2, b3);
+				displayAllBones(head, statusMap, b1, b2, b3);
 				flag = -1;
 			}
 			else
 			{
-				displayDog(dog, back, p1, p2);
+				displayDog(dog, back, statusMap, delTag, p1, p2);
 				flag = -1;
 			}
 		}
 		else if(flag==2)
 		{
-			tag = util.getRandomNumber(2, 6);
+			tag = util.getRandomNumber(1, 6);
 
 			//如果这个tag存在，说明该洞口已经有骨头,反之没有骨头
 			if (statusMap.count(tag)==0 || statusMap[tag]==false)
@@ -601,7 +814,28 @@ int main()
 		}
 		else if(flag==3)
 		{
-			deleteBone(head, count, statusMap);
+			map<int, boolean>::iterator iter;
+			for (iter = statusMap.begin(); iter != statusMap.end(); iter++)
+			{
+				int key = iter->first;
+				boolean val = iter->second;
+
+				if (key == count)
+				{
+					//如果骨头已经被删除
+					if (!val)
+					{
+						MessageBox(nullptr, "该骨头已删除，勿重复操作!", "警告", MB_OK + 48);
+						break;
+					}
+					else
+					{
+						deleteBone(head, count, statusMap);
+						break;
+					}
+				}
+			}
+			
 			flag = -1;
 		}
 		else if(flag==4)
