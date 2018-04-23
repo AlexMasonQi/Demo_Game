@@ -136,6 +136,7 @@ int checkButton(int mouseX, int mouseY)
 	}
 }
 
+//判断对应洞口是否有骨头，true代表有，false代表无
 boolean isBoneExists(int zone, map<int, boolean> statusMap)
 {
 	map<int, boolean>::iterator iter;
@@ -522,6 +523,13 @@ void add_bone(Bone *head, int tag, int &count, map<int,boolean> &statusMap)
 			statusMap[tag] = true;
 		}break;
 
+		case 2:
+		{
+			create_node(head, 360, 230);
+			count = tag;
+			statusMap[tag] = true;
+		}break;
+
 		case 3:
 		{
 			create_node(head, 600, 230);
@@ -678,6 +686,7 @@ int main()
 	char c = 0, d = 0;
 	int tag=1;
 	int delTag = 0;
+	double location = 0.05;
 	User user;
 	user.score = 0;
 	Bone *head;
@@ -770,7 +779,8 @@ int main()
 						}
 						else
 						{
-							outtextxy(GAME_WIDTH + 60, HEIGHT * (0.55 + 0.05) + 20, scoreNum);
+							location += 0.05;
+							outtextxy(GAME_WIDTH + 60, HEIGHT * (0.55 + location) + 20, scoreNum);
 						}
 					}
 					else
