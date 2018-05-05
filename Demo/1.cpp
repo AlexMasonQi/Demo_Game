@@ -16,8 +16,6 @@
 #include <fstream>
 using namespace std;
 
-#pragma comment(lib,"Winmm.lib")
-
 
 #define WIDTH 950
 #define HEIGHT 540
@@ -141,6 +139,7 @@ boolean isBoneExists(int zone, map<int, boolean> statusMap)
 {
 	map<int, boolean>::iterator iter;
 	boolean result = false;
+	//查找每个洞口是否有骨头
 	for (iter = statusMap.begin(); iter != statusMap.end(); iter++)
 	{
 		if (zone == iter->first)
@@ -166,12 +165,6 @@ void displayDog(Dog dog, IMAGE back,map<int,boolean> statusMap, int &delTag, IMA
 {
 	BeginBatchDraw();//开始批量绘图
 	putimage(0, 0, &back);
-
-	TCHAR xLocation[20];
-	TCHAR yLocation[20];
-
-	_itoa(dog.x, xLocation, 10);
-	_itoa(dog.y, yLocation, 10);
 
 	setbkmode(TRANSPARENT);
 
@@ -374,32 +367,7 @@ void displayAllBones(Bone *head, map<int,boolean> statusMap, IMAGE b1, IMAGE b2,
 	Bone *p;
 	p = head;
 	BeginBatchDraw();//开始批量绘图
-	//while (p != nullptr)
-	//{
-	//	//如果第一个洞口还存在骨头
-	//	if (statusMap[1])
-	//	{
-	//		if (p->x == 110 || p->x == 360)
-	//		{
-
-	//			putimage(p->x, p->y, &b1, SRCAND);
-
-	//			putimage(p->x, p->y, &b2, SRCINVERT);
-	//		}
-	//		else
-	//		{
-
-	//			putimage(p->x, p->y, &b1, SRCAND);
-
-	//			putimage(p->x, p->y, &b2, SRCINVERT);
-	//		}
-	//	}
-	//	else
-	//	{
-
-	//	}
-	//	p = p->next;
-	//}
+	
 
 	for (int i = 0; i < statusMap.size(); i++)
 	{
@@ -683,7 +651,7 @@ int main()
 	int mouseY;
 	MOUSEMSG mmsg;	    //鼠标消息变量
 	int flag = -1, step = 1, count = 1;
-	char c = 0, d = 0;
+	char c = 0;
 	int tag=1;
 	int delTag = 0;
 	double location = 0.05;
@@ -708,10 +676,6 @@ int main()
 
 	Util util;
 
-	// 打开音乐
-	mciSendString(TEXT("open Innocence.mp3 alias music"), nullptr, 0, nullptr);
-
-	mciSendString(TEXT("play music"), nullptr, 0, nullptr);
 
 	while(1)
 	{
